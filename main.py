@@ -12,7 +12,7 @@ model_cfg_path = os.path.join('.', 'model', 'cfg', 'yolov3.cfg')
 model_weights_path = os.path.join('.', 'model', 'weights', 'yolov3.weights')
 class_names_path = os.path.join('.', 'model', 'class.names')
 
-input_dir = '/home/duy/Desktop/AI_Project/yolov3-from-opencv-object-detection/data/'
+input_dir = '/home/duy/Desktop/New Folder/Plate-Recognition/data/'
 
 for img_name in os.listdir(input_dir): 
     img_path =os.path.join(input_dir, img_name)
@@ -68,13 +68,6 @@ for img_name in os.listdir(input_dir):
     for bbox_, bbox in enumerate(bboxes):
         xc, yc, w, h = bbox
 
-        cv2.putText(img,
-                    class_names[class_ids[bbox_]],
-                    (int(xc - (w / 2)), int(yc + (h / 2) - 20)),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    7,
-                    (0, 255, 0),
-                    15)
         img = cv2.rectangle(img,
                             (int(xc - (w / 2)), int(yc - (h / 2))),
                             (int(xc + (w / 2)), int(yc + (h / 2))),
