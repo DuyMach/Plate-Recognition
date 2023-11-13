@@ -12,7 +12,7 @@ model_cfg_path = os.path.join('.', 'model', 'cfg', 'yolov3.cfg')
 model_weights_path = os.path.join('.', 'model', 'weights', 'yolov3.weights')
 class_names_path = os.path.join('.', 'model', 'class.names')
 
-input_dir = '/home/duy/Desktop/New Folder/Plate-Recognition/data/'
+input_dir = '/home/duy/Desktop/New Folder/Plate-Recognition/data'
 
 for img_name in os.listdir(input_dir): 
     img_path =os.path.join(input_dir, img_name)
@@ -32,7 +32,7 @@ for img_name in os.listdir(input_dir):
     H, W, _ = img.shape
 
     # convert image
-    blob = cv2.dnn.blobFromImage(img, 1 / 255, (320, 320), (0, 0, 0), True)
+    blob = cv2.dnn.blobFromImage(img, 1 / 255, (416, 416), (0, 0, 0), True)
 
     # get detections
     net.setInput(blob)
@@ -73,6 +73,12 @@ for img_name in os.listdir(input_dir):
                             (int(xc + (w / 2)), int(yc + (h / 2))),
                             (0, 255, 0),
                             10)
+        license_plate = img[int(yc - (h / 2)):int(yc + (h / 2)),
+                             int(xc - (w / 2)):int(xc + (w / 2))]
 
+    plt.figure()
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+    plt.figure()
+    plt.imshow(cv2.cvtColor(license_plate, cv2.COLOR_BGR2RGB))
     plt.show()
