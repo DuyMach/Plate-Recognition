@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import easyocr
 
 import util
 
@@ -64,21 +65,38 @@ for img_name in os.listdir(input_dir):
     bboxes, class_ids, scores = util.NMS(bboxes, class_ids, scores)
 
     # plot
-
+    reader = easyocr.Reader(['en'])
     for bbox_, bbox in enumerate(bboxes):
         xc, yc, w, h = bbox
+
+        license_plate = img[int(yc - (h / 2)):int(yc + (h / 2)),
+                             int(xc - (w / 2)):int(xc + (w / 2))].copy()
 
         img = cv2.rectangle(img,
                             (int(xc - (w / 2)), int(yc - (h / 2))),
                             (int(xc + (w / 2)), int(yc + (h / 2))),
                             (0, 255, 0),
                             10)
-        license_plate = img[int(yc - (h / 2)):int(yc + (h / 2)),
-                             int(xc - (w / 2)):int(xc + (w / 2))]
+        
+        license_plate_gray = cv2.cvtColor(license_plate, cv2.COLOR_BGR2GRAY)
+
+        _, license_plate_thresh = cv2.threshold(license_plate_gray, 64, 255, cv2.THRESH_BINARY_INV)
+
+        output = reader.readtext(license_plate_gray)
+        
+        for out in output: 
+            text_bbox, text, text_score = out
+            print(text, text_score)
 
     plt.figure()
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
     plt.figure()
     plt.imshow(cv2.cvtColor(license_plate, cv2.COLOR_BGR2RGB))
+
+    plt.figure()
+    plt.imshow(cv2.cvtColor(license_plate_gray, cv2.COLOR_BGR2RGB))
+
+    plt.figure()
+    plt.imshow(cv2.cvtColor(license_plate_thresh, cv2.COLOR_BGR2RGB))
     plt.show()
