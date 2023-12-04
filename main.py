@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import easyocr
+import requests
 
 import util
 
@@ -13,7 +14,31 @@ model_cfg_path = os.path.join('.', 'model', 'cfg', 'yolov3.cfg')
 model_weights_path = os.path.join('.', 'model', 'weights', 'yolov3.weights')
 class_names_path = os.path.join('.', 'model', 'class.names')
 
-input_dir = '/home/duy/Desktop/New Folder/Plate-Recognition/data'
+input_dir = r'C:\Users\Owner\source\repos\Plate-Recognition\data'
+
+def validate_license_plate(license_plate):
+    url = "http://localhost:3001/validate_license_plate"
+    data = {"license_plate" : license_plate}
+
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        result = response.json().get("results")
+        return result
+    else:
+        print(f"Error: {response.status_code}")
+        return False
+    
+def insert_license_plate(license_plate):
+    url = "http://localhost:3001/insert_license_plate"
+    data = {"license_plate" : license_plate}
+
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        print(f"License plate {license_plate} inserted itno the databased")
+        return True
+    else:
+        print(f"Error: {response.status_code}")
+        return False
 
 for img_name in os.listdir(input_dir): 
     img_path =os.path.join(input_dir, img_name)
@@ -87,7 +112,19 @@ for img_name in os.listdir(input_dir):
         for out in output: 
             text_bbox, text, text_score = out
             print(text, text_score)
+            cleaned_license_plate = text.replace(" ", "").replace("-", "")
+            validation_result = validate_license_plate(cleaned_license_plate)
 
+            if validation_result:
+                print(f"{text} is a valid plate.")
+            else:
+                print(f"{text} is a not valid plate.")
+
+                insert_success = insert_license_plate(cleaned_license_plate)
+                if insert_success:
+                    print(f"License plate {text} inserted itno the databased")
+
+        
     plt.figure()
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 

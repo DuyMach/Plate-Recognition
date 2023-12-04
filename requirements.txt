@@ -1,4 +1,7 @@
-opencv-python==4.5.5.64
-matplotlib==3.6.0
-numpy==1.23.3
+opencv-python
+matplotlib
+numpy
 easyocr
+mysql-connector-python
+flask
+requests
